@@ -1,8 +1,8 @@
-[error] sbt.librarymanagement.ResolveException: Error downloading net.databinder.dispatch:dispatch-core_2.13:0.14.1
+[error] sbt.librarymanagement.ResolveException: Error downloading org.json4s:json4s-native_2.13:3.7.0
 [error]   Not found
 [error]   Not found
-[error]   not found: /Users/titoucoch/.ivy2/localnet.databinder.dispatch/dispatch-core_2.13/0.14.1/ivys/ivy.xml
-[error]   not found: https://repo1.maven.org/maven2/net/databinder/dispatch/dispatch-core_2.13/0.14.1/dispatch-core_2.13-0.14.1.pom
+[error]   not found: /Users/titoucoch/.ivy2/localorg.json4s/json4s-native_2.13/3.7.0/ivys/ivy.xml
+[error]   not found: https://repo1.maven.org/maven2/org/json4s/json4s-native_2.13/3.7.0/json4s-native_2.13-3.7.0.pom
 [error] 	at lmcoursier.CoursierDependencyResolution.unresolvedWarningOrThrow(CoursierDependencyResolution.scala:344)
 [error] 	at lmcoursier.CoursierDependencyResolution.$anonfun$update$38(CoursierDependencyResolution.scala:313)
 [error] 	at scala.util.Either$LeftProjection.map(Either.scala:573)
@@ -27,14 +27,14 @@
 [error] 	at sbt.Execute.$anonfun$submit$1(Execute.scala:283)
 [error] 	at sbt.ConcurrentRestrictions$$anon$4.$anonfun$submitValid$1(ConcurrentRestrictions.scala:265)
 [error] 	at sbt.CompletionService$$anon$2.call(CompletionService.scala:65)
-[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-[error] 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
-[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-[error] 	at java.base/java.lang.Thread.run(Thread.java:829)
-[error] (ssExtractDependencies) sbt.librarymanagement.ResolveException: Error downloading net.databinder.dispatch:dispatch-core_2.13:0.14.1
+[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+[error] 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:577)
+[error] 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+[error] 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+[error] 	at java.base/java.lang.Thread.run(Thread.java:1589)
+[error] (ssExtractDependencies) sbt.librarymanagement.ResolveException: Error downloading org.json4s:json4s-native_2.13:3.7.0
 [error]   Not found
 [error]   Not found
-[error]   not found: /Users/titoucoch/.ivy2/localnet.databinder.dispatch/dispatch-core_2.13/0.14.1/ivys/ivy.xml
-[error]   not found: https://repo1.maven.org/maven2/net/databinder/dispatch/dispatch-core_2.13/0.14.1/dispatch-core_2.13-0.14.1.pom
+[error]   not found: /Users/titoucoch/.ivy2/localorg.json4s/json4s-native_2.13/3.7.0/ivys/ivy.xml
+[error]   not found: https://repo1.maven.org/maven2/org/json4s/json4s-native_2.13/3.7.0/json4s-native_2.13-3.7.0.pom

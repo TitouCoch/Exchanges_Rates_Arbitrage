@@ -5,5 +5,8 @@ ThisBuild / scalaVersion := "2.13.11"
 lazy val root = (project in file("."))
   .settings(
     name := "Exchange_Rates_Arbitrage",
-    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0"
-)
+    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0",
+    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.2"
+
+
+  )
