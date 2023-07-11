@@ -1,18 +1,20 @@
 import play.api.libs.json._
 import scala.collection.mutable
 
-class Method {
+object Method {
+
+  var firstname = "John"
   case class CurrencyData(costPred: Float, namePred: Option[String])
 
-  private val ratesMap = collection.mutable.Map[String, Float]()
-  private val currencyRate = collection.mutable.Map[String, CurrencyData]()
+  var ratesMap = collection.mutable.Map[String, Float]()
+  var currencyRate = collection.mutable.Map[String, CurrencyData]()
     def getRatesMap: mutable.Map[String, Float] = ratesMap
 
     def getCurrencyRate: mutable.Map[String, CurrencyData] = currencyRate
 
 
 
-  protected def loadData(startCurrency: String): Unit = {
+  def loadData(startCurrency: String): Unit = {
     val response: requests.Response = requests.get("https://api.swissborg.io/v1/challenge/rates")
     val json = Json.parse(response.text)
 
@@ -32,7 +34,7 @@ class Method {
     currencyRate(startCurrency) = currencyRate(startCurrency).copy(costPred = 0.0f)
   }
 
-  protected def release(firstCurrency: String, secondCurrency: String): CurrencyData = {
+  def release(firstCurrency: String, secondCurrency: String): CurrencyData = {
     val newCostPred = currencyRate(firstCurrency).costPred + ratesMap(s"$firstCurrency-$secondCurrency")
 
     if (newCostPred < currencyRate(secondCurrency).costPred) {
@@ -42,7 +44,7 @@ class Method {
     }
   }
 
-  protected def findArbitragePath(startCurrency: String, currentCurrency: String, visited: Set[String], path: List[String], wallet: Float): Option[(Float, List[String])] = {
+  def findArbitragePath(startCurrency: String, currentCurrency: String, visited: Set[String], path: List[String], wallet: Float): Option[(Float, List[String])] = {
     val updatedCurrencyRate = currencyRate.keys.foldLeft(currencyRate) { (acc, firstCurrency) =>
       currencyRate.keys.foldLeft(acc) { (innerAcc, secondCurrency) =>
         innerAcc(secondCurrency) = release(firstCurrency, secondCurrency)
@@ -68,7 +70,7 @@ class Method {
     opportunities.reduceOption((a, b) => if (a._1 > b._1) a else b)
   }
 
-  protected def runArbitrage(startCurrency: String, wallet: Float): Option[(Float, List[String])] = {
+  def runArbitrage(startCurrency: String, wallet: Float): Option[(Float, List[String])] = {
     loadData(startCurrency)
     findArbitragePath(startCurrency, startCurrency, Set(startCurrency), List.empty, wallet)
   }
