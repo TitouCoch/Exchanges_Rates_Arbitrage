@@ -1,10 +1,16 @@
 import play.api.libs.json._
+import scala.collection.mutable
 
-protected class Method {
+class Method {
   case class CurrencyData(costPred: Float, namePred: Option[String])
 
-  protected val ratesMap = collection.mutable.Map[String, Float]()
-  protected val currencyRate = collection.mutable.Map[String, CurrencyData]()
+  private val ratesMap = collection.mutable.Map[String, Float]()
+  private val currencyRate = collection.mutable.Map[String, CurrencyData]()
+    def getRatesMap: mutable.Map[String, Float] = ratesMap
+
+    def getCurrencyRate: mutable.Map[String, CurrencyData] = currencyRate
+
+
 
   protected def loadData(startCurrency: String): Unit = {
     val response: requests.Response = requests.get("https://api.swissborg.io/v1/challenge/rates")
