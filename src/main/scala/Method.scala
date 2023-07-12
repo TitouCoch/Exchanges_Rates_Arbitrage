@@ -2,17 +2,13 @@ import play.api.libs.json._
 import scala.collection.mutable
 
 object Method {
-
-  var firstname = "John"
   case class CurrencyData(costPred: Float, namePred: Option[String])
 
-  var ratesMap = collection.mutable.Map[String, Float]()
-  var currencyRate = collection.mutable.Map[String, CurrencyData]()
+  val ratesMap: mutable.Map[String, Float] = collection.mutable.Map[String, Float]()
+  val currencyRate: mutable.Map[String, CurrencyData] = collection.mutable.Map[String, CurrencyData]()
     def getRatesMap: mutable.Map[String, Float] = ratesMap
 
     def getCurrencyRate: mutable.Map[String, CurrencyData] = currencyRate
-
-
 
   def loadData(startCurrency: String): Unit = {
     val response: requests.Response = requests.get("https://api.swissborg.io/v1/challenge/rates")
