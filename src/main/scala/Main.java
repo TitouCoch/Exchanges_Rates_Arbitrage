@@ -3,6 +3,9 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -34,6 +37,9 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    private XYChart.Series<Number, Number> profitSeries;
+    private LineChart<Number, Number> lineChart;
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -41,7 +47,9 @@ public class Main extends Application {
         currency = JavaConverters.mapAsJavaMap(Method.getCurrencyRate());
         rates = JavaConverters.mapAsJavaMap(Method.getRatesMap());
         loadGrid();
+        lineChart = createWalletEvolutionChart();
         displayData();
+
 
         primaryStage.setTitle("Exchange Rates Arbitrage");
 
@@ -52,26 +60,34 @@ public class Main extends Application {
         arbitrageButton.setOnAction(event -> {
             Option<Tuple2<Object, scala.collection.immutable.List<String>>> arbitrageResult = Method.runArbitrage("BTC", walletAmount);
             lastTransactionList = JavaConverters.asJava(arbitrageResult.get()._2);
-            walletAmount = (Float) arbitrageResult.get()._1;
-            walletText.get().setText("Wallet: " + walletAmount);
-            displayLastTransactionList();
+            float profit = (Float) arbitrageResult.get()._1;
+
+            walletAmount += profit;
+            walletText.get().setText("Profit : " + profit);
+            addToProfitSeries(walletAmount);
         });
 
-        walletText = new AtomicReference<>(new Text("Wallet : " + walletAmount));
+        Button showLastTransaction = createStyledButton("Last Transaction");
+        showLastTransaction.setOnAction(event -> displayLastTransactionList());
+
+        Button openChartButton = createStyledButton("Wallet Evolution");
+        openChartButton.setOnAction(event -> openChartWindow(profitSeries));
+
+        walletText = new AtomicReference<>(new Text("Profit : " + 0.0f));
         walletText.get().setFont(Font.font("Arial", FontWeight.BOLD, 22));
         walletText.get().setFill(Color.GREEN);
         walletText.get().setTranslateX(25);
 
-        HBox hbox = new HBox(10, refreshButton, arbitrageButton, walletText.get());
+        HBox hbox = new HBox(10, refreshButton, arbitrageButton, showLastTransaction, openChartButton, walletText.get());
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(20));
 
         VBox vbox = new VBox(10, gridPane, hbox);
         vbox.setPadding(new Insets(20));
 
-        Scene scene = new Scene(vbox, 700, 600);
-        primaryStage.setResizable(false);
+        Scene scene = new Scene(vbox, 800, 650);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -105,6 +121,8 @@ public class Main extends Application {
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(10);
         gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(30, 0, 0, 0));
+
 
         Text currencyText = new Text("Currency");
         currencyText.setTextAlignment(TextAlignment.CENTER);
@@ -182,9 +200,58 @@ public class Main extends Application {
         stage.show();
     }
 
+    private LineChart<Number, Number> createWalletEvolutionChart() {
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Transactions");
+        yAxis.setLabel("Profit");
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Wallet Evolution");
+
+        lineChart.setLegendVisible(false);
+        lineChart.setAnimated(false);
+        lineChart.setStyle("-fx-background-color: #F0F0F0;");
+
+        profitSeries = new XYChart.Series<>();
+        profitSeries.setName("Profit");
+        lineChart.getData().add(profitSeries);
+
+        return lineChart;
+    }
+
+    private void addToProfitSeries(float profit) {
+        int transactionCount = profitSeries.getData().size() + 1;
+        profitSeries.getData().add(new XYChart.Data<>(transactionCount, walletAmount + profit));
+    }
+
     private Button createStyledButton(String text) {
         Button button = new Button(text);
         button.setStyle("-fx-background-color: Black; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8px 16px;");
         return button;
+    }
+
+    private void openChartWindow(XYChart.Series<Number, Number> series) {
+        Stage chartStage = new Stage();
+        chartStage.setTitle("Wallet Evolution Chart");
+
+        LineChart<Number, Number> chartWindowLineChart = lineChart;
+        chartWindowLineChart.setLegendVisible(false);
+
+        XYChart.Series<Number, Number> chartWindowSeries = new XYChart.Series<>();
+        chartWindowSeries.setName("Profit");
+
+        for (XYChart.Data<Number, Number> data : series.getData()) {
+            chartWindowSeries.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
+        }
+        chartWindowLineChart.getData().add(chartWindowSeries);
+
+        VBox chartWindowLayout = new VBox(10, chartWindowLineChart);
+        chartWindowLayout.setPadding(new Insets(20));
+
+        Scene chartScene = new Scene(chartWindowLayout, 500, 400);
+        chartStage.setScene(chartScene);
+        chartStage.setResizable(false);
+        chartStage.show();
     }
 }

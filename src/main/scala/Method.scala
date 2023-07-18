@@ -6,9 +6,9 @@ object Method {
 
   val ratesMap: mutable.Map[String, Float] = collection.mutable.Map[String, Float]()
   val currencyRate: mutable.Map[String, CurrencyData] = collection.mutable.Map[String, CurrencyData]()
-    def getRatesMap: mutable.Map[String, Float] = ratesMap
 
-    def getCurrencyRate: mutable.Map[String, CurrencyData] = currencyRate
+  def getRatesMap: mutable.Map[String, Float] = ratesMap
+  def getCurrencyRate: mutable.Map[String, CurrencyData] = currencyRate
 
   def loadData(startCurrency: String): Unit = {
     val response: requests.Response = requests.get("https://api.swissborg.io/v1/challenge/rates")
@@ -54,6 +54,14 @@ object Method {
         val buyingPrice = wallet * ratesMap(finalPath.head)
         val sellingPrice = buyingPrice * ratesMap(finalPath.last)
         val profit = sellingPrice - buyingPrice
+
+        /*
+        println(s"Transaction: $finalPath")
+        println(s"Buying Price: $buyingPrice")
+        println(s"Selling Price: $sellingPrice")
+        println(s"Profit: $profit")
+         */
+
         Some((profit, finalPath))
       } else if (!visited.contains(nextCurrency)) {
         val newPath = path :+ s"$currentCurrency-$nextCurrency"
@@ -65,6 +73,7 @@ object Method {
 
     opportunities.reduceOption((a, b) => if (a._1 > b._1) a else b)
   }
+
 
   def runArbitrage(startCurrency: String, wallet: Float): Option[(Float, List[String])] = {
     loadData(startCurrency)
