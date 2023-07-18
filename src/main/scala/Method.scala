@@ -19,32 +19,29 @@ object Method {
       val rateValue = rate.as[String].toFloat
 
       if (!currencyRate.contains(separatedCurrency(0))) {
-        currencyRate(separatedCurrency(0)) = CurrencyData(Float.PositiveInfinity, None)
+        currencyRate(separatedCurrency(0)) = CurrencyData(Float.MaxValue, None) // Utilisation de Float.MaxValue pour initialiser les coûts prédits
       }
 
       ratesMap(currency) = rateValue
-      Some(separatedCurrency(0) -> CurrencyData(Float.PositiveInfinity, None))
+      Some(separatedCurrency(0) -> CurrencyData(Float.MaxValue, None)) // Utilisation de Float.MaxValue pour initialiser les coûts prédits
     }.toMap
 
     currencyRate ++= newCurrencyRate
     currencyRate(startCurrency) = currencyRate(startCurrency).copy(costPred = 0.0f)
   }
 
+
   def release(firstCurrency: String, secondCurrency: String): CurrencyData = {
     val newCostPred = currencyRate(firstCurrency).costPred + ratesMap(s"$firstCurrency-$secondCurrency")
 
-    if (newCostPred < currencyRate(secondCurrency).costPred) {
-      currencyRate(secondCurrency).copy(costPred = newCostPred, namePred = Some(firstCurrency))
-    } else {
-      currencyRate(secondCurrency)
-    }
+    currencyRate(secondCurrency).copy(costPred = newCostPred, namePred = Some(firstCurrency)) // Mettre à jour les coûts prédits sans condition
   }
 
   def findArbitragePath(startCurrency: String, currentCurrency: String, visited: Set[String], path: List[String], wallet: Float): Option[(Float, List[String])] = {
     val updatedCurrencyRate = currencyRate.keys.foldLeft(currencyRate) { (acc, firstCurrency) =>
       currencyRate.keys.foldLeft(acc) { (innerAcc, secondCurrency) =>
-        innerAcc(secondCurrency) = release(firstCurrency, secondCurrency)
-        innerAcc
+        val updatedRate = release(firstCurrency, secondCurrency)
+        innerAcc + (secondCurrency -> updatedRate)
       }
     }
 
@@ -54,13 +51,6 @@ object Method {
         val buyingPrice = wallet * ratesMap(finalPath.head)
         val sellingPrice = buyingPrice * ratesMap(finalPath.last)
         val profit = sellingPrice - buyingPrice
-
-        /*
-        println(s"Transaction: $finalPath")
-        println(s"Buying Price: $buyingPrice")
-        println(s"Selling Price: $sellingPrice")
-        println(s"Profit: $profit")
-         */
 
         Some((profit, finalPath))
       } else if (!visited.contains(nextCurrency)) {
@@ -73,6 +63,7 @@ object Method {
 
     opportunities.reduceOption((a, b) => if (a._1 > b._1) a else b)
   }
+
 
 
   def runArbitrage(startCurrency: String, wallet: Float): Option[(Float, List[String])] = {
